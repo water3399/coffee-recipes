@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月間野櫻花 — 沖煮星圖 for 阿葉</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0E1A;
+    --card-bg: #10142A;
+    --card-surface: rgba(255, 255, 255, 0.03);
+    --ink: #E8E4F0;
+    --ink-dim: rgba(232, 228, 240, 0.5);
+    --ink-faint: rgba(232, 228, 240, 0.2);
+    --gold: #D4A853;
+    --gold-light: #F0D48A;
+    --gold-dim: rgba(212, 168, 83, 0.25);
+    --cherry: #E8849E;
+    --cherry-dim: rgba(232, 132, 158, 0.3);
+    --purple: #8B7EC8;
+    --purple-dim: rgba(139, 126, 200, 0.2);
+    --cosmic: linear-gradient(135deg, #D4A853, #E8849E, #8B7EC8);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px;
+    font-family: 'Noto Serif TC', serif;
+    overflow-x: hidden;
+  }
+
+  /* ===== Starfield Background ===== */
+  .starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: var(--min-o, 0.1); transform: scale(1); }
+    100% { opacity: var(--max-o, 0.7); transform: scale(1.3); }
+  }
+
+  .shooting-star {
+    position: absolute;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(212,168,83,0.8), transparent);
+    transform: rotate(-35deg);
+    animation: shoot 4s ease-in-out infinite;
+    opacity: 0;
+  }
+
+  .shooting-star:nth-child(2) {
+    animation-delay: 2.5s;
+    top: 30%;
+    left: 60%;
+    width: 60px;
+  }
+
+  @keyframes shoot {
+    0% { opacity: 0; transform: rotate(-35deg) translateX(-100px); }
+    5% { opacity: 1; }
+    15% { opacity: 0; transform: rotate(-35deg) translateX(300px); }
+    100% { opacity: 0; }
+  }
+
+  /* ===== Card ===== */
+  .card {
+    width: 500px;
+    max-width: 100%;
+    background: var(--card-bg);
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(212, 168, 83, 0.15);
+    box-shadow:
+      0 0 60px rgba(139, 126, 200, 0.08),
+      0 0 120px rgba(212, 168, 83, 0.05),
+      0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: cardFloat 6s ease-in-out infinite, cardIn 1s ease-out;
+  }
+
+  @keyframes cardFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Glow border effect */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 25px;
+    background: linear-gradient(135deg, var(--gold-dim), transparent 40%, var(--cherry-dim) 60%, transparent 80%, var(--purple-dim));
+    z-index: -1;
+    animation: borderGlow 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes borderGlow {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+
+  /* ===== Header ===== */
+  .header {
+    padding: 36px 32px 30px;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 80% 20%, rgba(139, 126, 200, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 80%, rgba(212, 168, 83, 0.08) 0%, transparent 50%);
+  }
+
+  /* Moon */
+  .moon {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #F5ECD0, #E8D9A8, #D4C48A);
+    box-shadow:
+      0 0 20px rgba(245, 236, 208, 0.3),
+      0 0 60px rgba(245, 236, 208, 0.1),
+      inset -8px -4px 12px rgba(180, 160, 100, 0.3);
+    animation: moonGlow 3s ease-in-out infinite alternate;
+  }
+
+  .moon::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(180, 160, 100, 0.2);
+    top: 14px; left: 20px;
+  }
+
+  @keyframes moonGlow {
+    0% { box-shadow: 0 0 20px rgba(245,236,208,0.3), 0 0 60px rgba(245,236,208,0.1), inset -8px -4px 12px rgba(180,160,100,0.3); }
+    100% { box-shadow: 0 0 30px rgba(245,236,208,0.4), 0 0 80px rgba(245,236,208,0.15), inset -8px -4px 12px rgba(180,160,100,0.3); }
+  }
+
+  /* Constellation lines */
+  .constellation {
+    position: absolute;
+    top: 10px;
+    right: 100px;
+    width: 100px;
+    height: 80px;
+    opacity: 0.2;
+  }
+
+  .constellation .c-star {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: var(--gold-light);
+    border-radius: 50%;
+    box-shadow: 0 0 4px var(--gold);
+  }
+
+  .constellation .c-line {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+    transform-origin: left center;
+  }
+
+  .c-star:nth-child(1) { top: 10px; left: 20px; }
+  .c-star:nth-child(2) { top: 30px; left: 50px; }
+  .c-star:nth-child(3) { top: 15px; left: 75px; }
+  .c-star:nth-child(4) { top: 50px; left: 35px; }
+  .c-star:nth-child(5) { top: 55px; left: 70px; }
+
+  .c-line:nth-child(6) { top: 11px; left: 22px; width: 30px; transform: rotate(33deg); }
+  .c-line:nth-child(7) { top: 31px; left: 52px; width: 27px; transform: rotate(-30deg); }
+  .c-line:nth-child(8) { top: 31px; left: 37px; width: 15px; transform: rotate(-5deg); }
+  .c-line:nth-child(9) { top: 51px; left: 37px; width: 35px; transform: rotate(8deg); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: var(--cosmic);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 14px;
+    animation: fadeIn 1s 0.3s ease-out backwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .bean-name {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #F0D48A, #E8849E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.3;
+    letter-spacing: 2px;
+    animation: fadeIn 1s 0.5s ease-out backwards;
+  }
+
+  .bean-origin {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--ink-dim);
+    margin-top: 8px;
+    letter-spacing: 1px;
+    animation: fadeIn 1s 0.7s ease-out backwards;
+  }
+
+  .for-section {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeIn 1s 0.9s ease-out backwards;
+  }
+
+  .for-divider {
+    width: 24px;
+    height: 1px;
+    background: var(--gold-dim);
+  }
+
+  .for-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+
+  .for-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cherry);
+    margin-left: 4px;
+  }
+
+  /* Zodiac decorative ring */
+  .zodiac-ring {
+    position: absolute;
+    bottom: -30px;
+    left: -30px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid var(--gold-dim);
+    border-radius: 50%;
+    opacity: 0.15;
+    animation: spinSlow 30s linear infinite;
+  }
+
+  .zodiac-ring::before {
+    content: '♈ ♉ ♊ ♋ ♌ ♍';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 6px;
+    color: var(--gold);
+    letter-spacing: 4px;
+    white-space: nowrap;
+  }
+
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ===== Divider ===== */
+  .cosmic-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), var(--cherry-dim), var(--purple-dim), transparent);
+    position: relative;
+  }
+
+  .cosmic-divider::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--gold);
+    font-size: 10px;
+    background: var(--card-bg);
+    padding: 0 12px;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+  }
+
+  /* ===== Parameters Grid ===== */
+  .params {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 0;
+  }
+
+  .param {
+    padding: 22px 26px;
+    position: relative;
+    border-bottom: 1px solid rgba(212, 168, 83, 0.06);
+    transition: background 0.4s ease;
+    animation: paramIn 0.6s ease-out backwards;
+  }
+
+  .param:nth-child(1) { animation-delay: 0.4s; }
+  .param:nth-child(2) { animation-delay: 0.5s; }
+  .param:nth-child(3) { animation-delay: 0.6s; }
+  .param:nth-child(4) { animation-delay: 0.7s; }
+
+  @keyframes paramIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .param:nth-child(odd) {
+    border-right: 1px solid rgba(212, 168, 83, 0.06);
+  }
+
+  .param:hover {
+    background: rgba(212, 168, 83, 0.04);
+  }
+
+  .param-icon {
+    font-size: 16px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .param-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 6px;
+  }
+
+  .param-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .param-value .unit {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--ink-dim);
+  }
+
+  .param-sub {
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+  }
+
+  /* ===== Brew Steps ===== */
+  .steps-section {
+    padding: 28px 30px 24px;
+  }
+
+  .steps-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .steps-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .steps-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold-dim), transparent);
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  /* Timeline */
+  .steps::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 28px;
+    bottom: 28px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--gold), var(--cherry), var(--purple));
+    opacity: 0.3;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    position: relative;
+    animation: stepSlide 0.6s ease-out backwards;
+  }
+
+  .step:nth-child(1) { animation-delay: 0.8s; }
+  .step:nth-child(2) { animation-delay: 1.0s; }
+  .step:nth-child(3) { animation-delay: 1.2s; }
+  .step:nth-child(4) { animation-delay: 1.4s; }
+
+  @keyframes stepSlide {
+    from { opacity: 0; transform: translateX(-16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .step-orb {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+    color: var(--card-bg);
+    font-weight: 700;
+  }
+
+  .step:nth-child(1) .step-orb {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    box-shadow: 0 0 16px var(--gold-dim);
+    animation: orbPulse1 2.5s ease-in-out infinite;
+  }
+
+  .step:nth-child(2) .step-orb {
+    background: linear-gradient(135deg, #C4884A, var(--gold));
+    box-shadow: 0 0 16px rgba(196, 136, 74, 0.25);
+    animation: orbPulse2 2.5s 0.3s ease-in-out infinite;
+  }
+
+  .step:nth-child(3) .step-orb {
+    background: linear-gradient(135deg, var(--cherry), #F0A8BC);
+    box-shadow: 0 0 16px var(--cherry-dim);
+    animation: orbPulse3 2.5s 0.6s ease-in-out infinite;
+  }
+
+  .step:nth-child(4) .step-orb {
+    background: linear-gradient(135deg, var(--purple), #A89DD8);
+    box-shadow: 0 0 16px var(--purple-dim);
+    animation: orbPulse4 2.5s 0.9s ease-in-out infinite;
+  }
+
+  @keyframes orbPulse1 {
+    0%, 100% { box-shadow: 0 0 16px var(--gold-dim); }
+    50% { box-shadow: 0 0 24px var(--gold-dim), 0 0 40px rgba(212, 168, 83, 0.1); }
+  }
+  @keyframes orbPulse2 {
+    0%, 100% { box-shadow: 0 0 16px rgba(196, 136, 74, 0.25); }
+    50% { box-shadow: 0 0 24px rgba(196, 136, 74, 0.35), 0 0 40px rgba(196, 136, 74, 0.1); }
+  }
+  @keyframes orbPulse3 {
+    0%, 100% { box-shadow: 0 0 16px var(--cherry-dim); }
+    50% { box-shadow: 0 0 24px var(--cherry-dim), 0 0 40px rgba(232, 132, 158, 0.1); }
+  }
+  @keyframes orbPulse4 {
+    0%, 100% { box-shadow: 0 0 16px var(--purple-dim); }
+    50% { box-shadow: 0 0 24px var(--purple-dim), 0 0 40px rgba(139, 126, 200, 0.1); }
+  }
+
+  .step-orb .orb-symbol {
+    font-size: 15px;
+  }
+
+  .step-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .step-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .step-detail {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  .step-water {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    text-align: right;
+    min-width: 56px;
+  }
+
+  .step:nth-child(1) .step-water { color: var(--gold); }
+  .step:nth-child(2) .step-water { color: #D4A060; }
+  .step:nth-child(3) .step-water { color: var(--cherry); }
+  .step:nth-child(4) .step-water { color: var(--purple); }
+
+  .step-water .g {
+    font-size: 11px;
+    font-weight: 300;
+    opacity: 0.5;
+  }
+
+  /* ===== Water Fill Animation ===== */
+  .water-viz {
+    margin: 20px 8px 8px;
+    position: relative;
+  }
+
+  .water-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+  }
+
+  .water-fill {
+    height: 100%;
+    border-radius: 4px;
+    animation: fillIn 2s ease-out 1.5s backwards;
+  }
+
+  .fill-1 { width: 13.3%; background: linear-gradient(90deg, var(--gold), #C4884A); }
+  .fill-2 { width: 26.7%; background: linear-gradient(90deg, #C4884A, var(--cherry)); animation-delay: 1.7s; }
+  .fill-3 { width: 30%; background: linear-gradient(90deg, var(--cherry), var(--purple)); animation-delay: 1.9s; }
+  .fill-4 { width: 30%; background: linear-gradient(90deg, var(--purple), #A89DD8); border-radius: 0 4px 4px 0; animation-delay: 2.1s; }
+
+  @keyframes fillIn {
+    from { transform: scaleX(0); transform-origin: left; }
+    to { transform: scaleX(1); transform-origin: left; }
+  }
+
+  .water-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+
+  .water-labels span {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    color: var(--ink-faint);
+  }
+
+  /* ===== Moon Phase Footer ===== */
+  .footer {
+    padding: 20px 30px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(212, 168, 83, 0.06);
+    position: relative;
+  }
+
+  .moon-phases {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .moon-phase {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid var(--gold-dim);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .moon-phase::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  .mp-1::after { width: 0; }
+  .mp-2::after { width: 30%; left: 0; border-radius: 0 50% 50% 0; }
+  .mp-3::after { width: 50%; left: 0; }
+  .mp-4::after { width: 100%; left: 0; border-radius: 50%; }
+  .mp-5::after { width: 50%; right: 0; left: auto; }
+  .mp-6::after { width: 30%; right: 0; left: auto; border-radius: 50% 0 0 50%; }
+  .mp-7::after { width: 0; }
+
+  .footer-msg {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-faint);
+    letter-spacing: 0.5px;
+  }
+
+  .footer-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(212, 168, 83, 0.08);
+    border: 1px solid rgba(212, 168, 83, 0.12);
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  .footer-badge span {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  /* ===== Floating Particles ===== */
+  .particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    animation: particleFloat var(--dur) var(--delay) ease-in-out infinite;
+  }
+
+  @keyframes particleFloat {
+    0% { opacity: 0; transform: translateY(0) scale(0); }
+    20% { opacity: 0.6; transform: translateY(-10px) scale(1); }
+    80% { opacity: 0.3; transform: translateY(-40px) scale(0.5); }
+    100% { opacity: 0; transform: translateY(-60px) scale(0); }
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 520px) {
+    .card { border-radius: 18px; }
+    .header { padding: 28px 24px 24px; }
+    .bean-name { font-size: 22px; }
+    .moon { width: 48px; height: 48px; top: 16px; right: 20px; }
+    .param { padding: 18px 18px; }
+    .param-value { font-size: 20px; }
+    .steps-section { padding: 22px 22px 18px; }
+    .constellation { display: none; }
+  }
+
+  @media print {
+    body { background: #1a1d30; }
+    .starfield { display: none; }
+    .card { animation: none; box-shadow: none; }
+    .step, .param { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div class="starfield" id="starfield">
+  <div class="shooting-star" style="top:15%; left:10%;"></div>
+  <div class="shooting-star" style="top:45%; left:55%;"></div>
+</div>
+
+<!-- Card -->
+<div class="card">
+  <!-- Floating particles inside card -->
+  <div class="particle" style="top:20%; left:15%; --dur:3s; --delay:0s;"></div>
+  <div class="particle" style="top:50%; left:80%; --dur:4s; --delay:1s; background:var(--cherry);"></div>
+  <div class="particle" style="top:70%; left:30%; --dur:3.5s; --delay:2s; background:var(--purple);"></div>
+  <div class="particle" style="top:40%; left:60%; --dur:4.5s; --delay:0.5s;"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <!-- Moon -->
+    <div class="moon"></div>
+
+    <!-- Mini constellation -->
+    <div class="constellation">
+      <div class="c-star"></div>
+      <div class="c-star"></div>
+      <div class="c-star"></div>
+      <div class="c-star"></div>
+      <div class="c-star"></div>
+      <div class="c-line"></div>
+      <div class="c-line"></div>
+      <div class="c-line"></div>
+      <div class="c-line"></div>
+    </div>
+
+    <!-- Zodiac ring -->
+    <div class="zodiac-ring"></div>
+
+    <div class="tag">☽ Celestial Brew Chart ☽</div>
+    <div class="bean-name">月間野櫻花</div>
+    <div class="bean-origin">🇪🇹 Natural Process · Ethiopia — 日曬伊索比亞</div>
+
+    <div class="for-section">
+      <div class="for-divider"></div>
+      <span class="for-text">brewed under the stars for</span>
+      <span class="for-name">阿葉 ✦</span>
+    </div>
+  </div>
+
+  <div class="cosmic-divider"></div>
+
+  <!-- Parameters -->
+  <div class="params">
+    <div class="param">
+      <span class="param-icon">⚖️</span>
+      <div class="param-label">Ratio</div>
+      <div class="param-value">1 : 15</div>
+      <div class="param-sub">粉 20g ／ 水 300g</div>
+    </div>
+    <div class="param">
+      <span class="param-icon">🌡️</span>
+      <div class="param-label">Temperature</div>
+      <div class="param-value">92<span class="unit"> °C</span></div>
+    </div>
+    <div class="param">
+      <span class="param-icon">💧</span>
+      <div class="param-label">TDS</div>
+      <div class="param-value">70 — 130</div>
+    </div>
+    <div class="param">
+      <span class="param-icon">⏱</span>
+      <div class="param-label">Total Time</div>
+      <div class="param-value">1:50 — 2:10</div>
+    </div>
+  </div>
+
+  <div class="cosmic-divider"></div>
+
+  <!-- Brew Steps -->
+  <div class="steps-section">
+    <div class="steps-header">
+      <div class="steps-title">✦ Pouring Ritual</div>
+      <div class="steps-line"></div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-orb"><span class="orb-symbol">☽</span></div>
+        <div class="step-info">
+          <div class="step-name">悶蒸 Bloom</div>
+          <div class="step-detail">0:00 → 0:20 · 喚醒沈睡的花香</div>
+        </div>
+        <div class="step-water">40<span class="g">g</span></div>
+      </div>
+
+      <div class="step">
+        <div class="step-orb"><span class="orb-symbol">☿</span></div>
+        <div class="step-info">
+          <div class="step-name">第一段注水</div>
+          <div class="step-detail">累計至 0:50 · 風味初綻</div>
+        </div>
+        <div class="step-water">120<span class="g">g</span></div>
+      </div>
+
+      <div class="step">
+        <div class="step-orb"><span class="orb-symbol">♀</span></div>
+        <div class="step-info">
+          <div class="step-name">第二段注水</div>
+          <div class="step-detail">累計至 1:20 · 甜韻交織</div>
+        </div>
+        <div class="step-water">210<span class="g">g</span></div>
+      </div>
+
+      <div class="step">
+        <div class="step-orb"><span class="orb-symbol">♆</span></div>
+        <div class="step-info">
+          <div class="step-name">第三段注水</div>
+          <div class="step-detail">水滴乾 1:50 – 2:10 · 星圖成形</div>
+        </div>
+        <div class="step-water">300<span class="g">g</span></div>
+      </div>
+    </div>
+
+    <!-- Water visualization -->
+    <div class="water-viz">
+      <div class="water-track">
+        <div class="water-fill fill-1"></div>
+        <div class="water-fill fill-2"></div>
+        <div class="water-fill fill-3"></div>
+        <div class="water-fill fill-4"></div>
+      </div>
+      <div class="water-labels">
+        <span>0:00</span>
+        <span>0:20</span>
+        <span>0:50</span>
+        <span>1:20</span>
+        <span>~2:00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      <div class="moon-phases">
+        <div class="moon-phase mp-1"></div>
+        <div class="moon-phase mp-2"></div>
+        <div class="moon-phase mp-3"></div>
+        <div class="moon-phase mp-4"></div>
+        <div class="moon-phase mp-5"></div>
+        <div class="moon-phase mp-6"></div>
+        <div class="moon-phase mp-7"></div>
+      </div>
+      <div class="footer-msg" style="margin-top:8px;">As above, so below — in every cup ☕</div>
+    </div>
+    <div class="footer-badge">
+      <span>✦ Pour Over</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Generate starfield
+  const sf = document.getElementById('starfield');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (1.5 + Math.random() * 3) + 's');
+    star.style.setProperty('--min-o', (0.05 + Math.random() * 0.15).toFixed(2));
+    star.style.setProperty('--max-o', (0.3 + Math.random() * 0.5).toFixed(2));
+    star.style.animationDelay = (Math.random() * 3) + 's';
+    star.style.width = star.style.height = (1 + Math.random() * 2) + 'px';
+    sf.appendChild(star);
+  }
+</script>
+</body>
+</html>
